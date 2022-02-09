@@ -1,0 +1,21 @@
+---
+- hosts: linuxservers
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: copy required nrpe epel rpms
+      copy:
+        src: "files/{{ item }}"
+        dest: "/tmp/{{ item }}"
+      with_items:
+        - nagios-common-4.4.5-7.el7.x86_64.rpm
+        - nrpe-4.0.3-1.el7.x86_64.rpm
+
+    - name: install required yum pkgs
+      yum:
+        name: ['gcc', 'glibc', 'glibc-common', 'openssl', 'openssl-devel', 'perl', 'wget','/tmp/nagios-common-4.4.5-7.el7.x86_64.rpm','/tmp/nrpe-4.0.3-1.el7.x86_64.rpm']
+        state: present
+    - name: remove default nagios directory
+      file:
+        path: /usr/lib64/nagios
+        state: absent
